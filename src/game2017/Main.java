@@ -20,237 +20,313 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class Main extends Application
+{
 
-	public static final int size = 20;
-	public static final int scene_height = size * 20 + 100;
-	public static final int scene_width = size * 20 + 200;
+    public static final int size = 20;
+    public static final int scene_height = size * 20 + 100;
+    public static final int scene_width = size * 20 + 200;
 
-	public static Image image_floor;
-	public static Image image_wall;
-	public static Image hero_right, hero_left, hero_up, hero_down;
+    public static Image image_floor;
+    public static Image image_wall;
+    public static Image hero_right, hero_left, hero_up, hero_down, hero_right_blue, hero_left_blue,
+            hero_up_blue, hero_down_blue, hero_right_red, hero_left_red, hero_up_red, hero_down_red;
 
-	public static Player me;
-	public static List<Player> players = new ArrayList<>();
-	public static String playerIP[] = { "192.168.0.25", "192.168.0.29", "192.168.0.28" };
-	private static Socket clientSocket;
+    public static Player me;
+    public static List<Player> players = new ArrayList<>();
+    public static String playerIP[] = { "192.168.0.25", "192.168.0.29", "192.168.0.28" };
+    private static Socket clientSocket;
 
-	private Label[][] fields;
-	private TextArea scoreList;
+    private Label[][] fields;
+    private TextArea scoreList;
 
-	private String[] board = { // 20x20
-			"wwwwwwwwwwwwwwwwwwww", "w        ww        w", "w w  w  www w  w  ww", "w w  w   ww w  w  ww",
-			"w  w               w", "w w w w w w w  w  ww", "w w     www w  w  ww", "w w     w w w  w  ww",
-			"w   w w  w  w  w   w", "w     w  w  w  w   w", "w ww ww        w  ww", "w  w w    w    w  ww",
-			"w        ww w  w  ww", "w         w w  w  ww", "w        w     w  ww", "w  w              ww",
-			"w  w www  w w  ww ww", "w w      ww w     ww", "w   w   ww  w      w", "wwwwwwwwwwwwwwwwwwww" };
+    private String[] board = { // 20x20
+            "wwwwwwwwwwwwwwwwwwww", "w        ww        w", "w w  w  www w  w  ww",
+            "w w  w   ww w  w  ww", "w  w               w", "w w w w w w w  w  ww",
+            "w w     www w  w  ww", "w w     w w w  w  ww", "w   w w  w  w  w   w",
+            "w     w  w  w  w   w", "w ww ww        w  ww", "w  w w    w    w  ww",
+            "w        ww w  w  ww", "w         w w  w  ww", "w        w     w  ww",
+            "w  w              ww", "w  w www  w w  ww ww", "w w      ww w     ww",
+            "w   w   ww  w      w", "wwwwwwwwwwwwwwwwwwww" };
 
-	// -------------------------------------------
-	// | Maze: (0,0) | Score: (1,0) |
-	// |-----------------------------------------|
-	// | boardGrid (0,1) | scorelist |
-	// | | (1,1) |
-	// -------------------------------------------
+    // -------------------------------------------
+    // | Maze: (0,0) | Score: (1,0) |
+    // |-----------------------------------------|
+    // | boardGrid (0,1) | scorelist |
+    // | | (1,1) |
+    // -------------------------------------------
 
-	@Override
-	public void start(Stage primaryStage) {
-		try {
-			clientSocket = new Socket("192.168.0.25", 6789);
+    @Override
+    public void start(Stage primaryStage)
+    {
+        try {
+            clientSocket = new Socket("192.168.0.25", 6789);
 
-			GridPane grid = new GridPane();
-			grid.setHgap(10);
-			grid.setVgap(10);
-			grid.setPadding(new Insets(0, 10, 0, 10));
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(0, 10, 0, 10));
 
-			Text mazeLabel = new Text("Maze:");
-			mazeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            Text mazeLabel = new Text("Maze:");
+            mazeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
-			Text scoreLabel = new Text("Score:");
-			scoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            Text scoreLabel = new Text("Score:");
+            scoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
-			scoreList = new TextArea();
+            scoreList = new TextArea();
 
-			GridPane boardGrid = new GridPane();
+            GridPane boardGrid = new GridPane();
 
-			image_wall = new Image(this.getClass().getResourceAsStream("Image/wall4.png"), size, size, false, false);
-			image_floor = new Image(this.getClass().getResourceAsStream("Image/floor1.png"), size, size, false, false);
+            image_wall = new Image(this.getClass().getResourceAsStream("Image/wall4.png"), size,
+                    size, false, false);
+            image_floor = new Image(this.getClass().getResourceAsStream("Image/floor1.png"), size,
+                    size, false, false);
 
-			hero_right = new Image(this.getClass().getResourceAsStream("Image/heroRight.png"), size, size, false,
-					false);
-			hero_left = new Image(this.getClass().getResourceAsStream("Image/heroLeft.png"), size, size, false, false);
-			hero_up = new Image(this.getClass().getResourceAsStream("Image/heroUp.png"), size, size, false, false);
-			hero_down = new Image(this.getClass().getResourceAsStream("Image/heroDown.png"), size, size, false, false);
+            hero_right = new Image(this.getClass().getResourceAsStream("Image/heroRight.png"), size,
+                    size, false, false);
+            hero_left = new Image(this.getClass().getResourceAsStream("Image/heroLeft.png"), size,
+                    size, false, false);
+            hero_up = new Image(this.getClass().getResourceAsStream("Image/heroUp.png"), size, size,
+                    false, false);
+            hero_down = new Image(this.getClass().getResourceAsStream("Image/heroDown.png"), size,
+                    size, false, false);
 
-			fields = new Label[20][20];
-			for (int j = 0; j < 20; j++) {
-				for (int i = 0; i < 20; i++) {
-					switch (board[j].charAt(i)) {
-					case 'w':
-						fields[i][j] = new Label("", new ImageView(image_wall));
-						break;
-					case ' ':
-						fields[i][j] = new Label("", new ImageView(image_floor));
-						break;
-					default:
-						throw new Exception("Illegal field value: " + board[j].charAt(i));
-					}
-					boardGrid.add(fields[i][j], i, j);
-				}
-			}
-			scoreList.setEditable(false);
+            hero_right_blue = new Image(
+                    this.getClass().getResourceAsStream("Image/heroRightBlue.png"), size, size,
+                    false, false);
+            hero_left_blue = new Image(
+                    this.getClass().getResourceAsStream("Image/heroLeftBlue.png"), size, size,
+                    false, false);
+            hero_up_blue = new Image(this.getClass().getResourceAsStream("Image/heroUpBlue.png"),
+                    size, size, false, false);
+            hero_down_blue = new Image(
+                    this.getClass().getResourceAsStream("Image/heroDownBlue.png"), size, size,
+                    false, false);
 
-			grid.add(mazeLabel, 0, 0);
-			grid.add(scoreLabel, 1, 0);
-			grid.add(boardGrid, 0, 1);
-			grid.add(scoreList, 1, 1);
+            hero_right_red = new Image(
+                    this.getClass().getResourceAsStream("Image/heroRightRed.png"), size, size,
+                    false, false);
+            hero_left_red = new Image(this.getClass().getResourceAsStream("Image/heroLeftRed.png"),
+                    size, size, false, false);
+            hero_up_red = new Image(this.getClass().getResourceAsStream("Image/heroUpRed.png"),
+                    size, size, false, false);
+            hero_down_red = new Image(this.getClass().getResourceAsStream("Image/heroDownRed.png"),
+                    size, size, false, false);
 
-			Scene scene = new Scene(grid, scene_width, scene_height);
-			primaryStage.setScene(scene);
-			primaryStage.show();
+            fields = new Label[20][20];
+            for (int j = 0; j < 20; j++) {
+                for (int i = 0; i < 20; i++) {
+                    switch (board[j].charAt(i)) {
+                    case 'w':
+                        fields[i][j] = new Label("", new ImageView(image_wall));
+                        break;
+                    case ' ':
+                        fields[i][j] = new Label("", new ImageView(image_floor));
+                        break;
+                    default:
+                        throw new Exception("Illegal field value: " + board[j].charAt(i));
+                    }
+                    boardGrid.add(fields[i][j], i, j);
+                }
+            }
+            scoreList.setEditable(false);
 
-			try {
+            grid.add(mazeLabel, 0, 0);
+            grid.add(scoreLabel, 1, 0);
+            grid.add(boardGrid, 0, 1);
+            grid.add(scoreList, 1, 1);
 
-				DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+            Scene scene = new Scene(grid, scene_width, scene_height);
+            primaryStage.setScene(scene);
+            primaryStage.show();
 
-				scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-					switch (event.getCode()) {
-					case UP:
-						try {
-							outToServer.writeBytes(me.getXpos() + " " + me.getYpos() + " " + me.name + " " + 0 + " "
-									+ -1 + " " + "up" + "\n");
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						break;
-					case DOWN:
-						try {
-							outToServer.writeBytes(me.getXpos() + " " + me.getYpos() + " " + me.name + " " + 0 + " " + 1
-									+ " " + "down" + "\n");
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						// this.playerMoved(0, +1, "down");
-						break;
-					case LEFT:
-						try {
-							outToServer.writeBytes(me.getXpos() + " " + me.getYpos() + " " + me.name + " " + -1 + " "
-									+ 0 + " " + "left" + "\n");
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						// this.playerMoved(-1, 0, "left");
-						break;
-					case RIGHT:
-						try {
-							outToServer.writeBytes(me.getXpos() + " " + me.getYpos() + " " + me.name + " " + 1 + " " + 0
-									+ " " + "right" + "\n");
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						// this.playerMoved(+1, 0, "right");
-						break;
-					default:
-						break;
-					}
-				});
+            try {
 
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			// Setting up standard players
+                DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
-			me = new Player("Allan", 10, 10, "up");
-			players.add(me);
-			fields[10][10].setGraphic(new ImageView(hero_up));
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    switch (event.getCode()) {
+                    case UP:
+                        try {
+                            outToServer.writeBytes(me.getXpos() + " " + me.getYpos() + " " + me.name
+                                    + " " + 0 + " " + -1 + " " + "up" + "\n");
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        break;
+                    case DOWN:
+                        try {
+                            outToServer.writeBytes(me.getXpos() + " " + me.getYpos() + " " + me.name
+                                    + " " + 0 + " " + 1 + " " + "down" + "\n");
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        // this.playerMoved(0, +1, "down");
+                        break;
+                    case LEFT:
+                        try {
+                            outToServer.writeBytes(me.getXpos() + " " + me.getYpos() + " " + me.name
+                                    + " " + -1 + " " + 0 + " " + "left" + "\n");
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        // this.playerMoved(-1, 0, "left");
+                        break;
+                    case RIGHT:
+                        try {
+                            outToServer.writeBytes(me.getXpos() + " " + me.getYpos() + " " + me.name
+                                    + " " + 1 + " " + 0 + " " + "right" + "\n");
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        // this.playerMoved(+1, 0, "right");
+                        break;
+                    default:
+                        break;
+                    }
+                });
 
-			scoreList.setText(this.getScoreList());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            // Setting up standard players
 
-			Update update = new Update(clientSocket, me.name, this);
-			update.start();
+            me = new Player("Allan", 10, 10, "up");
+            players.add(me);
+            fields[10][10].setGraphic(new ImageView(hero_up));
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+            scoreList.setText(this.getScoreList());
 
-	public void playerMoved(String name, int delta_x, int delta_y, String direction) {
-		Player me = null;
-		for (Player p : players) {
-			if (p.name.equals(name)) {
-				me = p;
-			}
-		}
-		me.direction = direction;
-		int x = me.getXpos(), y = me.getYpos();
+            Update update = new Update(clientSocket, me.name, this);
+            update.start();
 
-		if (board[y + delta_y].charAt(x + delta_x) == 'w') {
-			me.addPoints(-1);
-		} else {
-			Player p = this.getPlayerAt(x + delta_x, y + delta_y);
-			if (p != null) {
-				me.addPoints(10);
-				p.addPoints(-10);
-			} else {
-				me.addPoints(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-				fields[x][y].setGraphic(new ImageView(image_floor));
-				x += delta_x;
-				y += delta_y;
+    public void playerMoved(String name, int delta_x, int delta_y, String direction)
+    {
+        Player me = null;
+        for (Player p : players) {
+            if (p.name.equals(name)) {
+                me = p;
+            }
+        }
+        me.direction = direction;
+        int x = me.getXpos(), y = me.getYpos();
 
-				if (direction.equals("right")) {
-					fields[x][y].setGraphic(new ImageView(hero_right));
-				}
-				;
-				if (direction.equals("left")) {
-					fields[x][y].setGraphic(new ImageView(hero_left));
-				}
-				;
-				if (direction.equals("up")) {
-					fields[x][y].setGraphic(new ImageView(hero_up));
-				}
-				;
-				if (direction.equals("down")) {
-					fields[x][y].setGraphic(new ImageView(hero_down));
-				}
-				;
+        if (board[y + delta_y].charAt(x + delta_x) == 'w') {
+            me.addPoints(-1);
+        } else {
+            Player p = this.getPlayerAt(x + delta_x, y + delta_y);
+            if (p != null) {
+                me.addPoints(10);
+                p.addPoints(-10);
+            } else {
+                me.addPoints(1);
 
-				me.setXpos(x);
-				me.setYpos(y);
-			}
-		}
-		scoreList.setText(this.getScoreList());
+                fields[x][y].setGraphic(new ImageView(image_floor));
+                x += delta_x;
+                y += delta_y;
 
-	}
+                if (players.get(0).equals(me)) {
+                    if (direction.equals("right")) {
+                        fields[x][y].setGraphic(new ImageView(hero_right));
+                    }
+                    ;
+                    if (direction.equals("left")) {
+                        fields[x][y].setGraphic(new ImageView(hero_left));
+                    }
+                    ;
+                    if (direction.equals("up")) {
+                        fields[x][y].setGraphic(new ImageView(hero_up));
+                    }
+                    ;
+                    if (direction.equals("down")) {
+                        fields[x][y].setGraphic(new ImageView(hero_down));
+                    }
+                    ;
+                }
 
-	public String getScoreList() {
-		StringBuffer b = new StringBuffer(100);
-		for (Player p : players) {
-			b.append(p + "\r\n");
-		}
-		return b.toString();
-	}
+                if (players.size() > 1 && players.get(1).equals(me)) {
+                    if (direction.equals("right")) {
+                        fields[x][y].setGraphic(new ImageView(hero_right_blue));
+                    }
+                    ;
+                    if (direction.equals("left")) {
+                        fields[x][y].setGraphic(new ImageView(hero_left_blue));
+                    }
+                    ;
+                    if (direction.equals("up")) {
+                        fields[x][y].setGraphic(new ImageView(hero_up_blue));
+                    }
+                    ;
+                    if (direction.equals("down")) {
+                        fields[x][y].setGraphic(new ImageView(hero_down_blue));
+                    }
+                    ;
+                }
 
-	public Player getPlayerAt(int x, int y) {
-		for (Player p : players) {
-			if (p.getXpos() == x && p.getYpos() == y) {
-				return p;
-			}
-		}
-		return null;
-	}
+                if (players.size() > 2 && players.get(2).equals(me)) {
+                    if (direction.equals("right")) {
+                        fields[x][y].setGraphic(new ImageView(hero_right_red));
+                    }
+                    ;
+                    if (direction.equals("left")) {
+                        fields[x][y].setGraphic(new ImageView(hero_left_red));
+                    }
+                    ;
+                    if (direction.equals("up")) {
+                        fields[x][y].setGraphic(new ImageView(hero_up_red));
+                    }
+                    ;
+                    if (direction.equals("down")) {
+                        fields[x][y].setGraphic(new ImageView(hero_down_red));
+                    }
+                    ;
+                }
+                me.setXpos(x);
+                me.setYpos(y);
+            }
+        }
+        scoreList.setText(this.getScoreList());
 
-	public void spawnPlayer(int x, int y) {
+    }
 
-		fields[x][y].setGraphic(new ImageView(hero_up));
+    public String getScoreList()
+    {
+        StringBuffer b = new StringBuffer(100);
+        for (Player p : players) {
+            b.append(p + "\r\n");
+        }
+        return b.toString();
+    }
 
-	}
+    public Player getPlayerAt(int x, int y)
+    {
+        for (Player p : players) {
+            if (p.getXpos() == x && p.getYpos() == y) {
+                return p;
+            }
+        }
+        return null;
+    }
 
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
+    public void spawnPlayer(int x, int y)
+    {
+
+        fields[x][y].setGraphic(new ImageView(hero_up));
+
+    }
+
+    public static void main(String[] args)
+    {
+        Application.launch(args);
+    }
 }
